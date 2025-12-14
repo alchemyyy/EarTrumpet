@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\Program Files (x86)\\Windows Kits\\10\\bin\" /AD /B)",
+      "Bash(dotnet build:*)",
+      "Bash(msbuild:*)",
+      "Bash(cmd /c \"where msbuild 2>nul || echo MSBuild not in PATH\")",
+      "Bash(cmd /c \"dir /s /b \"\"C:\\Program Files\\Microsoft Visual Studio\\*MSBuild.exe\"\" 2>nul | head -5\")",
+      "Bash(cmd /c \"dir /s /b \"\"C:\\Program Files (x86)\\Microsoft Visual Studio\\*MSBuild.exe\"\" 2>nul\")",
+      "Bash(git checkout:*)"
+    ]
+  }
+}
