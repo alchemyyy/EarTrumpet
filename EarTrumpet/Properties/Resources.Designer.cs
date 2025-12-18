@@ -1539,6 +1539,15 @@ namespace EarTrumpet.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sound Devices.
+        /// </summary>
+        public static string SoundDevicesText {
+            get {
+                return ResourceManager.GetString("SoundDevicesText", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Sounds.
         /// </summary>
         public static string SoundsControlPanelText {
@@ -1546,7 +1555,7 @@ namespace EarTrumpet.Properties {
                 return ResourceManager.GetString("SoundsControlPanelText", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Toggle mute.
         /// </summary>
