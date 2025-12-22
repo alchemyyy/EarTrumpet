@@ -201,6 +201,7 @@ namespace EarTrumpet
                 {
                     new ContextMenuSeparator(),
                     new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.SoundDevicesText, Command = new RelayCommand(() => LegacyControlPanelHelper.Open("playback")) },
+                    new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.BluetoothText, Command = new RelayCommand(() => System.Diagnostics.Process.Start("explorer.exe", "ms-actioncenter:controlcenter/bluetooth")) },
                     new ContextMenuSeparator(),
                 });
 

@@ -1548,6 +1548,15 @@ namespace EarTrumpet.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Bluetooth.
+        /// </summary>
+        public static string BluetoothText {
+            get {
+                return ResourceManager.GetString("BluetoothText", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Sounds.
         /// </summary>
         public static string SoundsControlPanelText {
