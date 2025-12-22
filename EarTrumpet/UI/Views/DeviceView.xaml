@@ -154,9 +154,11 @@
                       IsHitTestVisible="False">
                     <Grid.Style>
                         <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding DataContext.IsExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                <!-- Only show arrow when multiple devices are actually visible -->
+                                <DataTrigger Binding="{Binding DataContext.HasMultipleDevicesVisible, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

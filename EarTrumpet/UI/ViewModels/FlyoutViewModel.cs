@@ -20,6 +20,7 @@ namespace EarTrumpet.UI.ViewModels
         public bool IsExpanded { get; private set; }
         public bool IsExpandingOrCollapsing { get; private set; }
         public bool CanExpand => _mainViewModel.AllDevices.Count > 1;
+        public bool HasMultipleDevicesVisible => Devices.Count > 1;
         public string DeviceNameText => Devices.Count > 0 ? Devices[Devices.Count - 1].DisplayName : null;
         public FlyoutViewState State { get; private set; }
         public ObservableCollection<DeviceViewModel> Devices { get; private set; }
@@ -149,6 +150,7 @@ namespace EarTrumpet.UI.ViewModels
         {
             RaisePropertyChanged(nameof(IsExpanded));
             RaisePropertyChanged(nameof(CanExpand));
+            RaisePropertyChanged(nameof(HasMultipleDevicesVisible));
             RaisePropertyChanged(nameof(DeviceNameText));
             InvalidateWindowSize();
         }
