@@ -200,22 +200,8 @@ namespace EarTrumpet
             ret.AddRange(new List<ContextMenuItem>
                 {
                     new ContextMenuSeparator(),
-                    new ContextMenuItem
-                    {
-                        DisplayName = EarTrumpet.Properties.Resources.WindowsLegacyMenuText,
-                        Children = new List<ContextMenuItem>
-                        {
-                            new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.LegacyVolumeMixerText, Command =  new RelayCommand(LegacyControlPanelHelper.StartLegacyAudioMixer) },
-                            new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.PlaybackDevicesText, Command = new RelayCommand(() => LegacyControlPanelHelper.Open("playback")) },
-                            new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.RecordingDevicesText, Command = new RelayCommand(() => LegacyControlPanelHelper.Open("recording")) },
-                            new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.SoundsControlPanelText, Command = new RelayCommand(() => LegacyControlPanelHelper.Open("sounds")) },
-                            new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.OpenSoundSettingsText, Command = new RelayCommand(() => SettingsPageHelper.Open("sound")) },
-                            new ContextMenuItem {
-                                DisplayName = Environment.OSVersion.IsAtLeast(OSVersions.Windows11) ?
-                                    EarTrumpet.Properties.Resources.OpenAppsVolume_Windows11_Text
-                                    : EarTrumpet.Properties.Resources.OpenAppsVolume_Windows10_Text, Command = new RelayCommand(() => SettingsPageHelper.Open("apps-volume")) },
-                        },
-                    },
+                    new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.SoundDevicesText, Command = new RelayCommand(() => LegacyControlPanelHelper.Open("playback")) },
+                    new ContextMenuItem { DisplayName = EarTrumpet.Properties.Resources.BluetoothText, Command = new RelayCommand(() => System.Diagnostics.Process.Start("explorer.exe", "ms-actioncenter:controlcenter/bluetooth")) },
                     new ContextMenuSeparator(),
                 });
 

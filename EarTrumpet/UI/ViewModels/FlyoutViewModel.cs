@@ -20,7 +20,8 @@ namespace EarTrumpet.UI.ViewModels
         public bool IsExpanded { get; private set; }
         public bool IsExpandingOrCollapsing { get; private set; }
         public bool CanExpand => _mainViewModel.AllDevices.Count > 1;
-        public string DeviceNameText => Devices.Count > 0 ? Devices[0].DisplayName : null;
+        public bool HasMultipleDevicesVisible => Devices.Count > 1;
+        public string DeviceNameText => Devices.Count > 0 ? Devices[Devices.Count - 1].DisplayName : null;
         public FlyoutViewState State { get; private set; }
         public ObservableCollection<DeviceViewModel> Devices { get; private set; }
         public ICommand ExpandCollapse { get; private set; }
@@ -149,6 +150,7 @@ namespace EarTrumpet.UI.ViewModels
         {
             RaisePropertyChanged(nameof(IsExpanded));
             RaisePropertyChanged(nameof(CanExpand));
+            RaisePropertyChanged(nameof(HasMultipleDevicesVisible));
             RaisePropertyChanged(nameof(DeviceNameText));
             InvalidateWindowSize();
         }
@@ -159,12 +161,7 @@ namespace EarTrumpet.UI.ViewModels
             if (e == null) return;
 
             var foundDevice = Devices.FirstOrDefault(d => d.Id == e.Id);
-            if (foundDevice != null)
-            {
-                // Push to bottom.
-                Devices.Move(Devices.IndexOf(foundDevice), Devices.Count - 1);
-            }
-            else
+            if (foundDevice == null)
             {
                 var foundAllDevice = _mainViewModel.AllDevices.FirstOrDefault(d => d.Id == e.Id);
                 if (foundAllDevice != null)
@@ -182,10 +179,10 @@ namespace EarTrumpet.UI.ViewModels
 
         private void UpdateTextVisibility()
         {
-            // Show display name on only the "top" device, which handles Expanded and Collapsed.
+            // Show display name on all devices except the bottom one, which is covered by the expand/collapse button.
             for (var i = 0; i < Devices.Count; i++)
             {
-                Devices[i].IsDisplayNameVisible = i > 0;
+                Devices[i].IsDisplayNameVisible = i < Devices.Count - 1;
             }
         }
 
@@ -195,7 +192,7 @@ namespace EarTrumpet.UI.ViewModels
             _settings.IsExpanded = IsExpanded;
             if (IsExpanded)
             {
-                // Add any that aren't existing.
+                // Add devices above the current one (default stays at bottom).
                 foreach (var device in _mainViewModel.AllDevices)
                 {
                     if (!Devices.Contains(device))

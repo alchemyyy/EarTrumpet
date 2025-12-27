@@ -10,10 +10,11 @@
     <Grid Name="GridRoot">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <ListViewItem Name="DeviceListItem"
+                      Grid.Row="1"
                       AutomationProperties.Name="{Binding Device.AccessibleName}"
                       Tag="{x:Static views:DeviceView.DeviceListItemKey}">
             <Border Theme:Brush.Background=":=Transparent, Flyout:FlyoutBackground, Flyout:HighContrast=Window" Theme:Brush.BorderBrush="Theme=Transparent, HighContrast=Text">
@@ -130,7 +131,7 @@
             </Border>
         </ListViewItem>
 
-        <Border Grid.Row="1" Theme:Brush.Background=":=Background, Flyout:FlyoutBackground">
+        <Border Grid.Row="0" Theme:Brush.Background=":=Background, Flyout:FlyoutBackground">
             <Border.Style>
                 <Style TargetType="Border">
                     <Style.Triggers>
@@ -140,10 +141,44 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-            <ListView Name="AppList"
-                      Margin="{StaticResource VolumeAppListMargin}"
-                      AutomationProperties.Name="{x:Static resx:Resources.AppsListAccessibleText}"
-                      ItemsSource="{Binding Device.Apps, Mode=OneWay}" />
+            <Grid ClipToBounds="True">
+                <ListView Name="AppList"
+                          Margin="{StaticResource VolumeAppListMargin}"
+                          AutomationProperties.Name="{x:Static resx:Resources.AppsListAccessibleText}"
+                          ItemsSource="{Binding Device.Apps, Mode=OneWay}" />
+                <!-- Arrow indicating apps belong to device below (only visible when expanded) -->
+                <Grid HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Width="14"
+                      Margin="4,13,0,0"
+                      IsHitTestVisible="False">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <!-- Only show arrow when multiple devices are actually visible -->
+                                <DataTrigger Binding="{Binding DataContext.HasMultipleDevicesVisible, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+                    <!-- Vertical line (starts from top, under the caret) -->
+                    <Border Width="1.5"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Stretch"
+                            Margin="6.25,1,0,0"
+                            Theme:Brush.Background="SystemAccent" />
+                    <!-- Caret tip (overlays the top of the line) -->
+                    <Path VerticalAlignment="Top"
+                          HorizontalAlignment="Left"
+                          Margin="0.75,0,0,0"
+                          Theme:Brush.Stroke="SystemAccent"
+                          StrokeThickness="1.5"
+                          StrokeLineJoin="Miter"
+                          Data="M 3,5 L 6.25,0 L 9.5,5" />
+                </Grid>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

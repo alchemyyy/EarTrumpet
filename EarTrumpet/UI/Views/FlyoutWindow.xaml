@@ -32,7 +32,8 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Margin" Value="0,0,0,46" />
             <Setter Property="Theme:Brush.Foreground" Value="Theme=Text, HighContrast=ControlText" />
             <Setter Property="FocusVisualStyle" Value="{StaticResource Windows10FocusVisualStyle}" />
             <Setter Property="Template">
@@ -128,8 +129,7 @@
                                   IsTabStop="False"
                                   ItemsSource="{Binding Devices}" />
                     <Button Height="{DynamicResource Mutable_DeviceTitleCellHeight}"
-                            Command="{Binding ExpandCollapse}"
-                            IsEnabled="{Binding CanExpand}">
+                            Command="{Binding ExpandCollapse}">
                         <Button.Style>
                             <Style BasedOn="{StaticResource ExpandCollapseButtonStyle}" TargetType="{x:Type Button}">
                                 <Style.Triggers>
@@ -164,21 +164,11 @@
                                            FontSize="{DynamicResource Mutable_ExpandCollapseButtonGlyphFontSize}">
                                     <TextBlock.Style>
                                         <Style BasedOn="{StaticResource GlyphTextBlockStyle}" TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Text" Value="&#xe010;" />
                                             <Style.Triggers>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding CanExpand}" Value="True" />
-                                                        <Condition Binding="{Binding IsExpanded}" Value="True" />
-                                                    </MultiDataTrigger.Conditions>
+                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                                                     <Setter Property="Text" Value="&#xe011;" />
-                                                </MultiDataTrigger>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding CanExpand}" Value="True" />
-                                                        <Condition Binding="{Binding IsExpanded}" Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter Property="Text" Value="&#xe010;" />
-                                                </MultiDataTrigger>
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
