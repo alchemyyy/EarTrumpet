@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel.Storage;
+using EarTrumpet.DataModel.Storage;
 using EarTrumpet.Interop.Helpers;
 using System;
 using System.Diagnostics;
@@ -164,6 +164,32 @@ namespace EarTrumpet
         {
             get => _settings.Get("UseLogarithmicVolume", false);
             set => _settings.Set("UseLogarithmicVolume", value);
+        }
+
+        public event EventHandler PeakMeterFpsChanged;
+
+        public int PeakMeterFps
+        {
+            get => _settings.Get("PeakMeterFps", 30);
+            set
+            {
+                var clampedValue = Math.Max(1, Math.Min(1000, value));
+                _settings.Set("PeakMeterFps", clampedValue);
+                PeakMeterFpsChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler PeakMeterSampleRateChanged;
+
+        public int PeakMeterSampleRate
+        {
+            get => _settings.Get("PeakMeterSampleRate", 30);
+            set
+            {
+                var clampedValue = Math.Max(1, Math.Min(1000, value));
+                _settings.Set("PeakMeterSampleRate", clampedValue);
+                PeakMeterSampleRateChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public WINDOWPLACEMENT? FullMixerWindowPlacement

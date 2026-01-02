@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel.Audio;
+using EarTrumpet.DataModel.Audio;
 using EarTrumpet.DataModel.WindowsAudio;
 using EarTrumpet.Extensions;
 using System;
@@ -107,6 +107,16 @@ namespace EarTrumpet.UI.ViewModels
             {
                 RaisePropertyChanged(nameof(DisplayName));
                 RaisePropertyChanged(nameof(AccessibleName));
+            }
+        }
+
+        public override void OnNewSample(int interpolationSteps)
+        {
+            base.OnNewSample(interpolationSteps);
+
+            foreach (var app in Apps)
+            {
+                app.OnNewSample(interpolationSteps);
             }
         }
 

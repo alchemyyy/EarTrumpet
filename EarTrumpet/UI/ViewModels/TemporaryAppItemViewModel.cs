@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel;
+using EarTrumpet.DataModel;
 using EarTrumpet.DataModel.Audio;
 using EarTrumpet.DataModel.WindowsAudio;
 using EarTrumpet.Extensions;
@@ -170,6 +170,7 @@ namespace EarTrumpet.UI.ViewModels
             Expired?.Invoke(this, null);
         }
 
+        public void OnNewSample(int interpolationSteps) { }
         public void UpdatePeakValueBackground() { }
         public void UpdatePeakValueForeground() { }
     }

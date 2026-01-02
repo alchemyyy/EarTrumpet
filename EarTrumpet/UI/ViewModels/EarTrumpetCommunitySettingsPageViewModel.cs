@@ -1,4 +1,4 @@
-﻿namespace EarTrumpet.UI.ViewModels
+namespace EarTrumpet.UI.ViewModels
 {
     public class EarTrumpetCommunitySettingsPageViewModel : SettingsPageViewModel
     {
@@ -8,7 +8,19 @@
             get => _settings.UseLogarithmicVolume;
             set => _settings.UseLogarithmicVolume = value;
         }
-        
+
+        public int PeakMeterFps
+        {
+            get => _settings.PeakMeterFps;
+            set => _settings.PeakMeterFps = value;
+        }
+
+        public int PeakMeterSampleRate
+        {
+            get => _settings.PeakMeterSampleRate;
+            set => _settings.PeakMeterSampleRate = value;
+        }
+
         public EarTrumpetCommunitySettingsPageViewModel(AppSettings settings) : base(null)
         {
             _settings = settings;

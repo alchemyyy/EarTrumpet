@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel.Audio;
+using EarTrumpet.DataModel.Audio;
 using EarTrumpet.Extensions;
 using System;
 using System.Collections.ObjectModel;
@@ -86,14 +86,16 @@ namespace EarTrumpet.UI.ViewModels
 
         }
 
+        public void OnNewSample(int interpolationSteps)
+        {
+        }
+
         public void UpdatePeakValueBackground()
         {
-            throw new NotImplementedException();
         }
 
         public void UpdatePeakValueForeground()
         {
-            throw new NotImplementedException();
         }
     }
 }

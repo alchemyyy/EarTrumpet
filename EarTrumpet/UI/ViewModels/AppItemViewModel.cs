@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel.Audio;
+using EarTrumpet.DataModel.Audio;
 using EarTrumpet.DataModel.WindowsAudio.Internal;
 using EarTrumpet.DataModel.WindowsAudio;
 using EarTrumpet.Extensions;
@@ -77,7 +77,7 @@ namespace EarTrumpet.UI.ViewModels
 
         private void Session_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch(e.PropertyName)
+            switch (e.PropertyName)
             {
                 case nameof(_session.DisplayName):
                     RaisePropertyChanged(nameof(DisplayName));
@@ -114,6 +114,19 @@ namespace EarTrumpet.UI.ViewModels
             ((IAudioDeviceSessionInternal)_session).MoveToDevice(id, hide);
         }
 
+        public override void OnNewSample(int interpolationSteps)
+        {
+            if (ChildApps != null)
+            {
+                foreach (var child in ChildApps)
+                {
+                    child.OnNewSample(interpolationSteps);
+                }
+            }
+
+            base.OnNewSample(interpolationSteps);
+        }
+
         public override void UpdatePeakValueForeground()
         {
             if (ChildApps != null)
@@ -142,7 +155,7 @@ namespace EarTrumpet.UI.ViewModels
 
         public bool DoesGroupWith(IAppItemViewModel app) => (AppId == app.AppId);
 
-       public override string ToString() => IsMuted ? Properties.Resources.AppOrDeviceMutedFormatAccessibleText.Replace("{Name}", DisplayName) :
-            Properties.Resources.AppOrDeviceFormatAccessibleText.Replace("{Name}", DisplayName).Replace("{Volume}", Volume.ToString());
+        public override string ToString() => IsMuted ? Properties.Resources.AppOrDeviceMutedFormatAccessibleText.Replace("{Name}", DisplayName) :
+             Properties.Resources.AppOrDeviceFormatAccessibleText.Replace("{Name}", DisplayName).Replace("{Volume}", Volume.ToString());
     }
 }

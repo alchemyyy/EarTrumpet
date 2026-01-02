@@ -176,6 +176,30 @@
                 <CheckBox HorizontalAlignment="Left"
                           Content="{x:Static resx:Resources.SettingsUseLogarithmicVolume}"
                           IsChecked="{Binding UseLogarithmicVolume, Mode=TwoWay}" />
+                <StackPanel Margin="0,16,0,0" Orientation="Vertical">
+                    <TextBlock Style="{StaticResource BodyText}" Text="{x:Static resx:Resources.SettingsPeakMeterFps}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="80"
+                                 Margin="12,4,8,0"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding PeakMeterFps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Style="{StaticResource BodySubText}"
+                                   Text="{x:Static resx:Resources.SettingsPeakMeterFpsRange}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Margin="0,16,0,0" Orientation="Vertical">
+                    <TextBlock Style="{StaticResource BodyText}" Text="{x:Static resx:Resources.SettingsPeakMeterSampleRate}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="80"
+                                 Margin="12,4,8,0"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding PeakMeterSampleRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Style="{StaticResource BodySubText}"
+                                   Text="{x:Static resx:Resources.SettingsPeakMeterSampleRateRange}" />
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:EarTrumpetLegacySettingsPageViewModel}">

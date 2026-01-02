@@ -1,4 +1,4 @@
-﻿using EarTrumpet.DataModel.Audio;
+using EarTrumpet.DataModel.Audio;
 using EarTrumpet.DataModel.WindowsAudio;
 using EarTrumpet.Extensions;
 using System;
@@ -26,7 +26,8 @@ namespace EarTrumpet.UI.ViewModels
         public DeviceViewModel DefaultCommunications { get; private set; }
 
         private readonly IAudioDeviceManager _deviceManager;
-        private readonly Timer _peakMeterTimer;
+        private readonly Timer _peakMeterSampleTimer;
+        private readonly Timer _peakMeterRenderTimer;
         private readonly AppSettings _settings;
         private readonly Dispatcher _currentDispatcher = Dispatcher.CurrentDispatcher;
         private bool _isFlyoutVisible;
@@ -41,9 +42,26 @@ namespace EarTrumpet.UI.ViewModels
             _deviceManager.Devices.CollectionChanged += OnCollectionChanged;
             OnCollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
-            _peakMeterTimer = new Timer(1000 / 30); // 30 fps
-            _peakMeterTimer.AutoReset = true;
-            _peakMeterTimer.Elapsed += PeakMeterTimer_Elapsed;
+            _peakMeterSampleTimer = new Timer(1000.0 / _settings.PeakMeterSampleRate);
+            _peakMeterSampleTimer.AutoReset = true;
+            _peakMeterSampleTimer.Elapsed += PeakMeterSampleTimer_Elapsed;
+
+            _peakMeterRenderTimer = new Timer(1000.0 / _settings.PeakMeterFps);
+            _peakMeterRenderTimer.AutoReset = true;
+            _peakMeterRenderTimer.Elapsed += PeakMeterRenderTimer_Elapsed;
+
+            _settings.PeakMeterFpsChanged += OnPeakMeterFpsChanged;
+            _settings.PeakMeterSampleRateChanged += OnPeakMeterSampleRateChanged;
+        }
+
+        private void OnPeakMeterFpsChanged(object sender, EventArgs e)
+        {
+            _peakMeterRenderTimer.Interval = 1000.0 / _settings.PeakMeterFps;
+        }
+
+        private void OnPeakMeterSampleRateChanged(object sender, EventArgs e)
+        {
+            _peakMeterSampleTimer.Interval = 1000.0 / _settings.PeakMeterSampleRate;
         }
 
         private void OnDefaultChanged(object sender, IAudioDevice newDevice)
@@ -150,10 +168,24 @@ namespace EarTrumpet.UI.ViewModels
             }
         }
 
-        private void PeakMeterTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void PeakMeterSampleTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             _deviceManager.UpdatePeakValues();
 
+            // Calculate interpolation steps: how many render frames between samples
+            int interpolationSteps = Math.Max(1, _settings.PeakMeterFps / _settings.PeakMeterSampleRate);
+
+            _currentDispatcher.BeginInvoke((Action)(() =>
+            {
+                foreach (var device in AllDevices)
+                {
+                    device.OnNewSample(interpolationSteps);
+                }
+            }));
+        }
+
+        private void PeakMeterRenderTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
             _currentDispatcher.BeginInvoke((Action)(() =>
             {
                 foreach (var device in AllDevices)
@@ -227,7 +259,9 @@ namespace EarTrumpet.UI.ViewModels
 
         private void StartOrStopPeakTimer()
         {
-            _peakMeterTimer.Enabled = _isFlyoutVisible || _isFullWindowVisible;
+            var enabled = _isFlyoutVisible || _isFullWindowVisible;
+            _peakMeterSampleTimer.Enabled = enabled;
+            _peakMeterRenderTimer.Enabled = enabled;
         }
 
         public void OnTrayFlyoutShown()

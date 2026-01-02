@@ -1,4 +1,4 @@
-﻿using EarTrumpet.UI.Helpers;
+using EarTrumpet.UI.Helpers;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media;
@@ -24,6 +24,7 @@ namespace EarTrumpet.UI.ViewModels
         int ProcessId { get; }
         bool DoesGroupWith(IAppItemViewModel app);
         void MoveToDevice(string id, bool hide);
+        void OnNewSample(int interpolationSteps);
         void UpdatePeakValueForeground();
         void UpdatePeakValueBackground();
         IDeviceViewModel Parent { get; }
