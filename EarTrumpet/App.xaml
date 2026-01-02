@@ -140,6 +140,15 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            <Style x:Key="SubtleFocusVisualStyle">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Rectangle Theme:Brush.Stroke="SystemAccent" StrokeThickness="1" Opacity="0.6" RadiusX="2" RadiusY="2" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <Style x:Key="{x:Type ContentControl}" TargetType="ContentControl">
                 <Setter Property="IsTabStop" Value="False" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />

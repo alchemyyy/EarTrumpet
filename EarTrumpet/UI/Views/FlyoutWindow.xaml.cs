@@ -5,12 +5,15 @@ using EarTrumpet.UI.Helpers;
 using EarTrumpet.UI.ViewModels;
 using System;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Threading;
 
 namespace EarTrumpet.UI.Views
 {
     public partial class FlyoutWindow
     {
         private readonly IFlyoutViewModel _viewModel;
+        private readonly DispatcherTimer _activationCheckTimer;
 
         public FlyoutWindow(IFlyoutViewModel viewModel)
         {
@@ -27,6 +30,27 @@ namespace EarTrumpet.UI.Views
                 this.EnableRoundedCornersIfApplicable();
             };
             Themes.Manager.Current.ThemeChanged += () => EnableAcrylicIfApplicable(WindowsTaskbar.Current);
+
+            // Fallback timer to detect when window loses focus (in case Deactivated event doesn't fire)
+            _activationCheckTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _activationCheckTimer.Tick += OnActivationCheckTimerTick;
+        }
+
+        private void OnActivationCheckTimerTick(object sender, EventArgs e)
+        {
+            // If the flyout is open but another window has focus, close it
+            if (_viewModel.State == FlyoutViewState.Open)
+            {
+                var foregroundWindow = User32.GetForegroundWindow();
+                var thisWindow = new WindowInteropHelper(this).Handle;
+
+                // Close if we're not the foreground window (more reliable than IsActive)
+                if (foregroundWindow != thisWindow && foregroundWindow != IntPtr.Zero)
+                {
+                    _activationCheckTimer.Stop();
+                    _viewModel.ChangeState(FlyoutViewState.Closing_Stage1);
+                }
+            }
         }
 
         public void Initialize()
@@ -50,8 +74,8 @@ namespace EarTrumpet.UI.Views
                     EnableAcrylicIfApplicable(taskbar);
                     PositionWindowRelativeToTaskbar(taskbar);
 
-                    // Focus the first device if available.
-                    DevicesList.FindVisualChild<DeviceView>()?.FocusAndRemoveFocusVisual();
+                    // Focus the last (bottommost/default) device if available.
+                    DevicesList.FindLastVisualChild<DeviceView>()?.FocusAndRemoveFocusVisual();
 
                     // Prevent showing stale adnorners.
                     this.WaitForKeyboardVisuals(() =>
@@ -63,8 +87,16 @@ namespace EarTrumpet.UI.Views
                     });
                     break;
 
+                case FlyoutViewState.Open:
+                    // Start fallback timer to detect when window loses focus
+                    _activationCheckTimer.Start();
+                    break;
+
                 case FlyoutViewState.Closing_Stage1:
-                    DevicesList.FindVisualChild<DeviceView>()?.FocusAndRemoveFocusVisual();
+                    // Stop fallback timer
+                    _activationCheckTimer.Stop();
+
+                    DevicesList.FindLastVisualChild<DeviceView>()?.FocusAndRemoveFocusVisual();
                 
                     if (_viewModel.IsExpandingOrCollapsing)
                     {

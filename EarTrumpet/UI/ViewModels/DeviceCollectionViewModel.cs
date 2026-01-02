@@ -18,10 +18,12 @@ namespace EarTrumpet.UI.ViewModels
         private static readonly string DefaultDeviceChangedProperty = "DefaultDeviceChangedProperty";
 
         public event EventHandler<DeviceViewModel> DefaultChanged;
+        public event EventHandler<DeviceViewModel> DefaultCommunicationsChanged;
         public event Action TrayPropertyChanged;
 
         public ObservableCollection<DeviceViewModel> AllDevices { get; private set; } = new ObservableCollection<DeviceViewModel>();
         public DeviceViewModel Default { get; private set; }
+        public DeviceViewModel DefaultCommunications { get; private set; }
 
         private readonly IAudioDeviceManager _deviceManager;
         private readonly Timer _peakMeterTimer;
@@ -35,6 +37,7 @@ namespace EarTrumpet.UI.ViewModels
             _settings = settings;
             _deviceManager = deviceManager;
             _deviceManager.DefaultChanged += OnDefaultChanged;
+            _deviceManager.DefaultCommunicationsChanged += OnDefaultCommunicationsChanged;
             _deviceManager.Devices.CollectionChanged += OnCollectionChanged;
             OnCollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
@@ -78,6 +81,21 @@ namespace EarTrumpet.UI.ViewModels
 
             // Let clients know that even though no properties changed, the underlying object changed.
             OnDefaultDevicePropertyChanged(this, new PropertyChangedEventArgs(DefaultDeviceChangedProperty));
+        }
+
+        private void OnDefaultCommunicationsChanged(object sender, IAudioDevice newDevice)
+        {
+            if (newDevice == null)
+            {
+                DefaultCommunications = null;
+                DefaultCommunicationsChanged?.Invoke(this, null);
+            }
+            else
+            {
+                var device = AllDevices.FirstOrDefault(d => d.Id == newDevice.Id);
+                DefaultCommunications = device;
+                DefaultCommunicationsChanged?.Invoke(this, DefaultCommunications);
+            }
         }
 
         private void OnDefaultDevicePropertyChanged(object sender, PropertyChangedEventArgs e)

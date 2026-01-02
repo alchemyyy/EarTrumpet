@@ -68,5 +68,27 @@ namespace EarTrumpet.Extensions
             }
             return null;
         }
+
+        public static childItem FindLastVisualChild<childItem>(this DependencyObject obj) where childItem : DependencyObject
+        {
+            childItem lastFound = null;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is childItem)
+                {
+                    lastFound = (childItem)child;
+                }
+                else
+                {
+                    var childOfChild = FindLastVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                    {
+                        lastFound = childOfChild;
+                    }
+                }
+            }
+            return lastFound;
+        }
     }
 }

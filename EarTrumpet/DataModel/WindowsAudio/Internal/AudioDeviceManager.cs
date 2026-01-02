@@ -15,6 +15,7 @@ namespace EarTrumpet.DataModel.WindowsAudio.Internal
     class AudioDeviceManager : IMMNotificationClient, IAudioDeviceManager, IAudioDeviceManagerWindowsAudio
     {
         public event EventHandler<IAudioDevice> DefaultChanged;
+        public event EventHandler<IAudioDevice> DefaultCommunicationsChanged;
         public event EventHandler Loaded;
 
         public ObservableCollection<IAudioDevice> Devices { get; }
@@ -33,6 +34,8 @@ namespace EarTrumpet.DataModel.WindowsAudio.Internal
             }
         }
 
+        public IAudioDevice DefaultCommunications => _defaultCommunications;
+
 
         private EDataFlow Flow => _kind == AudioDeviceKind.Playback ? EDataFlow.eRender : EDataFlow.eCapture;
 
@@ -40,6 +43,7 @@ namespace EarTrumpet.DataModel.WindowsAudio.Internal
 
         private IMMDeviceEnumerator _enumerator;
         private IAudioDevice _default;
+        private IAudioDevice _defaultCommunications;
         private readonly Dispatcher _dispatcher;
         private readonly AudioDeviceKind _kind;
         private readonly AudioPolicyConfig _policyConfigService;
@@ -114,6 +118,14 @@ namespace EarTrumpet.DataModel.WindowsAudio.Internal
             {
                 DefaultChanged?.Invoke(this, _default);
             }
+
+            var currentCommDeviceId = _defaultCommunications?.Id;
+            _defaultCommunications = GetDefaultDevice(ERole.eCommunications);
+            string newCommDeviceId = _defaultCommunications?.Id;
+            if (currentCommDeviceId != newCommDeviceId)
+            {
+                DefaultCommunicationsChanged?.Invoke(this, _defaultCommunications);
+            }
         }
 
         public void SetDefaultDevice(IAudioDevice device, ERole role = ERole.eMultimedia)
@@ -140,7 +152,7 @@ namespace EarTrumpet.DataModel.WindowsAudio.Internal
         {
             try
             {
-                var rawDevice = _enumerator.GetDefaultAudioEndpoint(Flow, ERole.eMultimedia);
+                var rawDevice = _enumerator.GetDefaultAudioEndpoint(Flow, eRole);
                 TryFind(rawDevice.GetId(), out var device);
                 return device;
             }

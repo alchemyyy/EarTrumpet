@@ -16,6 +16,7 @@
         <ListViewItem Name="DeviceListItem"
                       Grid.Row="1"
                       AutomationProperties.Name="{Binding Device.AccessibleName}"
+                      FocusVisualStyle="{StaticResource SubtleFocusVisualStyle}"
                       Tag="{x:Static views:DeviceView.DeviceListItemKey}">
             <Border Theme:Brush.Background=":=Transparent, Flyout:FlyoutBackground, Flyout:HighContrast=Window" Theme:Brush.BorderBrush="Theme=Transparent, HighContrast=Text">
                 <Border.Style>
@@ -156,9 +157,13 @@
                         <Style TargetType="Grid">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
-                                <!-- Only show arrow when multiple devices are actually visible -->
+                                <!-- Show arrow when multiple devices are visible -->
                                 <DataTrigger Binding="{Binding DataContext.HasMultipleDevicesVisible, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
                                     <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <!-- Hide arrow if this device has no apps (overrides above) -->
+                                <DataTrigger Binding="{Binding Device.Apps.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

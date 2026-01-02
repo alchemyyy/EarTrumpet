@@ -46,6 +46,7 @@ namespace EarTrumpet.UI.ViewModels
             _returnFocusToTray = returnFocusToTray;
             _mainViewModel = mainViewModel;
             _mainViewModel.DefaultChanged += OnDefaultPlaybackDeviceChanged;
+            _mainViewModel.DefaultCommunicationsChanged += OnDefaultCommunicationsDeviceChanged;
             _mainViewModel.AllDevices.CollectionChanged += AllDevices_CollectionChanged;
             AllDevices_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 
@@ -99,6 +100,12 @@ namespace EarTrumpet.UI.ViewModels
                     break;
             }
 
+            // Re-sort when app counts change (affects sort order for non-default devices)
+            if (IsExpanded && Devices.Count > 1)
+            {
+                SortDevices();
+            }
+
             InvalidateWindowSize();
         }
 
@@ -118,6 +125,10 @@ namespace EarTrumpet.UI.ViewModels
             {
                 case NotifyCollectionChangedAction.Add:
                     AddDevice((DeviceViewModel)e.NewItems[0]);
+                    if (IsExpanded)
+                    {
+                        SortDevices();
+                    }
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
@@ -136,6 +147,10 @@ namespace EarTrumpet.UI.ViewModels
                     }
 
                     OnDefaultPlaybackDeviceChanged(null, _mainViewModel.Default);
+                    if (IsExpanded)
+                    {
+                        SortDevices();
+                    }
                     break;
 
                 default:
@@ -173,8 +188,59 @@ namespace EarTrumpet.UI.ViewModels
                     Devices.Add(foundAllDevice);
                 }
             }
+            else if (IsExpanded)
+            {
+                // Default changed while expanded, re-sort to put new default at bottom
+                SortDevices();
+            }
             UpdateTextVisibility();
             RaiseDevicesChanged();
+        }
+
+        private void OnDefaultCommunicationsDeviceChanged(object sender, DeviceViewModel e)
+        {
+            if (IsExpanded && Devices.Count > 1)
+            {
+                // Communications device changed while expanded, re-sort
+                SortDevices();
+                UpdateTextVisibility();
+                RaiseDevicesChanged();
+            }
+        }
+
+        private int GetDeviceSortOrder(DeviceViewModel device)
+        {
+            // Higher values = closer to bottom
+            // Default device: highest priority (bottom)
+            if (device.Id == _mainViewModel.Default?.Id)
+            {
+                return int.MaxValue;
+            }
+            // Communications device (if different): second highest priority
+            if (device.Id == _mainViewModel.DefaultCommunications?.Id)
+            {
+                return int.MaxValue - 1;
+            }
+            // Other devices: sorted by app count (more apps = higher value = closer to bottom)
+            return device.Apps.Count;
+        }
+
+        private void SortDevices()
+        {
+            if (Devices.Count <= 1) return;
+
+            // Create sorted list
+            var sorted = Devices.OrderBy(d => GetDeviceSortOrder(d)).ToList();
+
+            // Reorder in place to avoid losing event subscriptions
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                var currentIndex = Devices.IndexOf(sorted[i]);
+                if (currentIndex != i)
+                {
+                    Devices.Move(currentIndex, i);
+                }
+            }
         }
 
         private void UpdateTextVisibility()
@@ -192,15 +258,17 @@ namespace EarTrumpet.UI.ViewModels
             _settings.IsExpanded = IsExpanded;
             if (IsExpanded)
             {
-                // Add devices above the current one (default stays at bottom).
+                // Add all devices
                 foreach (var device in _mainViewModel.AllDevices)
                 {
                     if (!Devices.Contains(device))
                     {
                         device.Apps.CollectionChanged += Apps_CollectionChanged;
-                        Devices.Insert(0, device);
+                        Devices.Add(device);
                     }
                 }
+                // Sort: default at bottom, communications second, then by app count
+                SortDevices();
             }
             else
             {
