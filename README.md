@@ -31,7 +31,7 @@
 
 ## Sponsors
 
-<!-- sponsors --><a href="https://github.com/PykeMann"><img src="https://github.com/PykeMann.png" width="60px" alt="" title="" /></a><a href="https://github.com/audabas"><img src="https://github.com/audabas.png" width="60px" alt="Bastien Auda" title="Bastien Auda" /></a><!-- sponsors -->
+<!-- sponsors --><!-- sponsors -->
 
 ## Features
 
@@ -96,6 +96,7 @@ Want to see what we were working on? Or help us test new features? [Install EarT
 ## Special thanks
 
 "[Horn](https://thenounproject.com/icon/horn-125731/)" icon by Artjom Korman from [the Noun Project](https://thenounproject.com/)
+
 
 
 
